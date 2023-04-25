@@ -1,0 +1,146 @@
+@startuml
+'OOP course, 2023, Jalasoft (R)
+'author: Alvaro Zambrana Sejas
+
+'TIC TAC TOE OOP Analysis and Design
+
+'abstract classes and interfaces from Java or other third party lib
+
+interface MouseListener {
+  +mousePressed(e: MouseEvent)
+  +mouseReleased(e: MouseEvent)
+  +mouseEntered(e: MouseEvent)
+  +mouseExited(e: MouseEvent)
+  +mouseClicked(e: MouseEvent)
+}
+
+abstract class Component
+
+'MVC
+
+TicTacToe *-- TicTacToeController
+TicTacToeController *-- TicTacToeModel
+TicTacToeController *-- TicTacToeView
+TicTacToeView -- TicTacToeModel
+TicTacToeView -- Position
+TicTacToeView *-- Cell
+
+TicTacToeController *-- Player
+Player -- SYMBOL
+
+interface Drawable {
+  +draw (g: Graphics)
+}
+
+interface Clickable {
+  +click (position: Position)
+}
+
+class TicTacToe {
+  -ticTacToeController: TicTacToeController
+  +startGame()
+}
+
+class TicTacToeController implements MouseListener {
+  -ticTacToeView: TicTacToeView
+  -ticTacToeModel: TicTacToeModel
+
+  -currentPlayer: Player<SYMBOL>
+
+  -firstPlayer: Player<SYMBOL>
+  -secondPlayer: Player<SYMBOL>
+
+  -updateBoard()
+  -clickOnPosition(position: Position)
+  -changePlayer(): Player<SYMBOL>
+  -turn(): Player<SYMBOL>
+}
+
+class TicTacToeView extends JFrame {
+  +BLOCK_HEIGHT: int
+  +BLOCK_WIDTH: int
+  -cells: Cell[][]
+  -ticTacToeController: TicTacToeController
+
+  ' size=3, by default, cells = new Cell[size][size]
+  +TicTacToeView(size: Integer)
+
+  -drawBoard(g: Graphics2D)
+  -drawCells(g: Graphics2D)
+  -drawCell(position: Position, g: Graphics2D)
+  -drawShape(position: Position, shape: AbstractShape, g: Graphics2D)
+  -draw(g: Graphics2D): void
+
+  +renderBoard(g: Graphics2D, ticTacToeModel: TicTacToeModel)
+}
+
+' Implement this class write unit tests to validate the logic
+class TicTacToeModel {
+  -board: SYMBOL[][]:
+
+  +TicTacToeModel(size: int)
+
+  +updateBoard(position: Position, symbol: SYMBOL)
+  +isValidMove(position: Position): boolean
+  +isGameOver(): boolean
+  +hasWinner(): SYMBOL
+  +isTie(): boolean
+}
+
+class Cell extends Component implements Drawable, Clickable, MouseListener {
+  -position: Position
+  ' EmptyShape as default
+  -shape: AbstractShape
+  ' default false, if true we cannot receive click events anymore
+  -locked: boolean
+
+  +setShape(shape: AbstractShape)
+  +paint(g: Graphics2D)
+  +draw(g: Graphics2D)
+}
+
+abstract class AbstractShape implements Drawable {
+  -width: int
+  -height: int
+  -position: Position
+
+  AbstractShape(position: Position, width: int, height: int)
+
+  +draw(g: Graphics2D)
+  +setPosition(position: Position)
+}
+
+' override draw method for each shape
+class XShape extends AbstractShape {
+}
+
+class OShape extends AbstractShape {
+}
+
+class EmptyShape extends AbstractShape {
+}
+
+class Position {
+  -row: int
+  -col: int
+}
+
+class Player<S> {
+  -symbol: S
+  -name: String
+}
+
+enum SYMBOL {
+  X,
+  O,
+  EMPTY
+}
+
+ShapeFactory o-- AbstractShape
+ShapeFactory -- SYMBOL
+
+interface ShapeFactory {
+    +createShape(symbol: SYMBOL): AbstractShape
+}
+
+@enduml
