@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.controller.TicTacToeController;
+
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import java.awt.Dimension;
